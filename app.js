@@ -378,15 +378,6 @@
       tile(pct.format(n(k.taxa_pagamento)), "Taxa de pagamento", "do valor vencido nos últimos 12 meses"),
     );
 
-    // leitura automática
-    const custos12 = n(k.taxas_12m) + n(k.custo_antecipacao_12m);
-    const frases = [];
-    frases.push(`Nos últimos 12 meses entraram ${brl.format(n(k.recebido_12m))} em ${n(k.recebido_12m_qtd).toLocaleString("pt-BR")} pagamentos; ${pct.format(n(k.em_dia_12m))} desse valor foi pago até o vencimento.`);
-    frases.push(`Taxas do Asaas (${brl.format(n(k.taxas_12m))}) e custo de antecipação (${brl.format(n(k.custo_antecipacao_12m))}) consumiram ${pct.format(n(k.recebido_12m) ? custos12 / n(k.recebido_12m) : 0)} do recebido; ${brl.format(n(k.transferido_12m))} foram transferidos para o banco.`);
-    frases.push(`Há ${brl.format(n(k.a_receber_total))} a receber; pela taxa histórica de pagamento de ${pct.format(n(k.taxa_pagamento))}, a expectativa realista é de ${brl.format(n(k.a_receber_total) * n(k.taxa_pagamento))}.`);
-    if (n(k.vencido)) frases.push(`A inadimplência acumulada soma ${brl.format(n(k.vencido))} em ${k.vencido_qtd} cobranças de ${k.vencido_clientes} clientes.`);
-    $("finLeitura").replaceChildren(el("span", {}, el("b", {}, "Leitura. "), frases.join(" ")));
-    $("finLeitura").hidden = false;
 
     // fluxo de caixa
     const fluxo = fin.fluxo || [];
