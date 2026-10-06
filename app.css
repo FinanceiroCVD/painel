@@ -296,3 +296,21 @@ dialog.senha h2{font-size:16px}
   .topbar{padding:0 16px}
   .whoami{display:none}
 }
+
+/* ─── aba Financeiro: gráficos em SVG desenhados com os tokens ─── */
+.duas-colunas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:0 20px}
+.grafico{width:100%;min-width:0}
+.grafico svg{display:block;width:100%;height:auto;overflow:visible}
+.grafico .eixo{font-family:var(--font-mono);font-size:10px;fill:var(--text-3)}
+.grafico .grade{stroke:var(--border);stroke-width:1}
+.grafico .base{stroke:var(--border-strong);stroke-width:1}
+.grafico .rot-valor{font-family:var(--font-mono);font-size:9.5px;fill:var(--text-2)}
+.legenda-fin{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px}
+.legenda-fin span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-2)}
+.legenda-fin i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legenda-fin i.linha{height:3px;border-radius:2px}
+.tile-sub.ok{color:var(--ok)}
+.tile-sub.crit{color:var(--crit)}
+.funil td.pos{color:var(--ok)}
+.funil td.neg{color:var(--crit)}
+.funil tr.mes-atual td{background:var(--accent-soft)}
