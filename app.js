@@ -354,6 +354,17 @@
   }
   $("finAtualizar").addEventListener("click", () => carregarFinanceiro(false));
 
+  // Uma visão por vez; a escolha fica guardada neste navegador.
+  function abrirVisao(v) {
+    const validas = ["fluxo", "previsao", "recebimentos", "inadimplencia"];
+    if (!validas.includes(v)) v = "fluxo";
+    for (const b of $("finVisoes").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.visao === v));
+    for (const p of document.querySelectorAll(".fin-visao")) p.hidden = p.dataset.visao !== v;
+    try { localStorage.setItem("painel-fin-visao", v); } catch {}
+  }
+  $("finVisoes").addEventListener("click", (ev) => { const b = ev.target.closest("button"); if (b) abrirVisao(b.dataset.visao); });
+  try { abrirVisao(localStorage.getItem("painel-fin-visao")); } catch { abrirVisao("fluxo"); }
+
   function desenharFinanceiro() {
     const u = fin.usuario || {};
     $("nomeEu").textContent = u.nome || u.email || "";
@@ -372,23 +383,22 @@
       tile(saldo == null ? "—" : brl.format(saldo), "Saldo na conta Asaas", fin.saldo ? "medido " + new Date(fin.saldo.medido_em).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "sem leitura"),
       tile(brl.format(n(k.recebido_mes)), "Recebido no mês", varMes == null ? `${k.recebido_mes_qtd || 0} pagamentos` :
         `${varMes >= 0 ? "+" : ""}${pct.format(varMes)} vs mesmo período do mês anterior`, varMes == null ? "" : varMes >= 0 ? "ok" : "crit"),
-      tile(brl.format(n(k.a_receber_30)), "A receber em 30 dias", `${k.a_receber_30_qtd || 0} cobranças a vencer`),
-      tile(brl.format(n(k.a_receber_total)), "Carteira a receber", `${k.a_receber_total_qtd || 0} cobranças futuras`),
-      tile(brl.format(n(k.vencido)), "Vencido e não pago", `${k.vencido_qtd || 0} cobranças · ${k.vencido_clientes || 0} clientes`, n(k.vencido) ? "crit" : ""),
-      tile(pct.format(n(k.taxa_pagamento)), "Taxa de pagamento", "do valor vencido nos últimos 12 meses"),
+      tile(brl.format(n(k.a_receber_30)), "A receber em 30 dias", `de ${brl.format(n(k.a_receber_total))} na carteira`),
+      tile(brl.format(n(k.vencido)), "Vencido", `${k.vencido_qtd || 0} cobranças · ${k.vencido_clientes || 0} clientes`, n(k.vencido) ? "crit" : ""),
     );
 
 
     // fluxo de caixa
     const fluxo = fin.fluxo || [];
     const mesAtualIso = mesAtual();
+    const fluxo6 = fluxo.slice(-6);
     graficoBarras($("finFluxoGraf"), {
-      rotulos: fluxo.map((f) => rotMes(f.mes)),
+      rotulos: fluxo6.map((f) => rotMes(f.mes)),
       series: [
-        { nome: "Entradas", cor: "var(--ok)", valores: fluxo.map((f) => n(f.entradas)) },
-        { nome: "Saídas", cor: "var(--crit)", valores: fluxo.map((f) => n(f.saidas)) },
+        { nome: "Entradas", cor: "var(--ok)", valores: fluxo6.map((f) => n(f.entradas)) },
+        { nome: "Saídas", cor: "var(--crit)", valores: fluxo6.map((f) => n(f.saidas)) },
       ],
-      linha: { nome: "Saldo no fim do mês (eixo da direita)", cor: "var(--accent)", valores: fluxo.map((f) => n(f.saldo_final)) },
+      linha: { nome: "Saldo no fim do mês", cor: "var(--accent)", valores: fluxo6.map((f) => n(f.saldo_final)) },
     });
     const cat = (f, c) => n((f.por_categoria || {})[c]);
     $("finFluxoTab").replaceChildren(
@@ -422,6 +432,8 @@
         el("td", { class: "txt fnum forte" }, rotMes(p.mes)), el("td", { class: "fnum" }, p.cobrancas),
         el("td", { class: "fnum" }, brl.format(n(p.previsto))), el("td", { class: "fnum forte" }, brl.format(n(p.previsto_realista)))))));
 
+    $("finPrevNota").textContent = `Realista = previsto × ${pct.format(n(k.taxa_pagamento))}, a parte do valor vencido nos últimos 12 meses que acabou sendo paga.`;
+
     // próximas semanas
     barrasHorizontais($("finSemanas"), (fin.previsao_semanal || []).map((w) => ({
       rot: "Semana de " + diaMes.format(new Date(w.semana + "T00:00:00Z")), valor: n(w.previsto), extra: `${w.cobrancas} cobr.` })), "var(--inv)",
@@ -453,11 +465,15 @@
     barrasHorizontais($("finInad"), (fin.inadimplencia || []).map((i) => ({
       rot: i.faixa, valor: n(i.valor), extra: `${i.cobrancas} cobr. · ${i.clientes} cli.` })), "var(--crit)", "Nenhuma cobrança vencida.");
 
-    $("finDevedores").replaceChildren(
+    const tabDev = (lista) => [
       el("thead", {}, el("tr", {}, el("th", { class: "txt" }, "Cliente"), el("th", {}, "Cobranças"), el("th", {}, "Valor vencido"), el("th", {}, "Maior atraso"))),
-      el("tbody", {}, ...(fin.maiores_devedores || []).map((d) => el("tr", {},
+      el("tbody", {}, ...lista.map((d) => el("tr", {},
         el("td", { class: "txt" }, d.cliente), el("td", { class: "fnum" }, d.cobrancas),
-        el("td", { class: "fnum forte neg" }, brl.format(n(d.valor))), el("td", { class: "fnum" }, `${d.maior_atraso} dias`)))));
+        el("td", { class: "fnum forte neg" }, brl.format(n(d.valor))), el("td", { class: "fnum" }, `${d.maior_atraso} dias`))))];
+    const dev = fin.maiores_devedores || [];
+    $("finDevedores").replaceChildren(...tabDev(dev.slice(0, 5)));
+    $("finDevedoresMais").replaceChildren(...tabDev(dev.slice(5)));
+    $("finDevMaisBox").hidden = dev.length <= 5;
 
     // anos e últimos recebimentos
     barrasHorizontais($("finAnos"), (fin.recebimentos_anuais || []).map((a) => ({

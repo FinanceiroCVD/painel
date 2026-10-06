@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Painel CVD · Financeiro</title>
 <!-- Sem webfont: fontes do sistema, como no operacao.3cvd.com.br. -->
-<link rel="stylesheet" href="app.css?v=20261006b">
+<link rel="stylesheet" href="app.css?v=20261006d">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
 </head>
 <body>
@@ -65,10 +65,16 @@
     <section class="view" id="financeiro" hidden>
       <div class="page-title">
         <h1>Financeiro</h1>
-        <p id="finSubtitulo">Conta Asaas · histórico, fluxo de caixa, previsão e inadimplência</p>
+        <p>Conta Asaas</p>
       </div>
 
       <div class="filtros">
+        <div class="grupo" id="finVisoes" role="tablist" aria-label="Visão">
+          <button type="button" data-visao="fluxo">Fluxo de caixa</button>
+          <button type="button" data-visao="previsao">Previsão</button>
+          <button type="button" data-visao="recebimentos">Recebimentos</button>
+          <button type="button" data-visao="inadimplencia">Inadimplência</button>
+        </div>
         <span class="spacer"></span>
         <span class="atualizado" id="finAtualizado"></span>
         <button class="btn-ghost" id="finAtualizar" type="button">Atualizar</button>
@@ -78,81 +84,72 @@
 
       <div class="tiles" id="finTiles"></div>
 
-      <div class="painel">
-        <div class="painel-cab">
-          <h2>Fluxo de caixa</h2>
-          <p>Entradas e saídas da conta Asaas por mês, com o saldo no fim de cada mês (últimos 13 meses)</p>
-        </div>
+      <div class="painel fin-visao" data-visao="fluxo">
+        <div class="painel-cab"><h2>Fluxo de caixa</h2><p>últimos 6 meses</p></div>
         <div class="painel-corpo">
           <div class="grafico" id="finFluxoGraf"></div>
-          <div class="rolagem" style="margin-top:14px">
-            <table class="funil" id="finFluxoTab"></table>
+          <details class="detalhe">
+            <summary>Ver detalhes por mês</summary>
+            <div class="rolagem"><table class="funil" id="finFluxoTab"></table></div>
+          </details>
+        </div>
+      </div>
+
+      <div class="fin-visao" data-visao="previsao" hidden>
+        <div class="duas-colunas">
+          <div class="painel">
+            <div class="painel-cab"><h2>Previsão por mês</h2><p>próximos 12 meses</p></div>
+            <div class="painel-corpo">
+              <div class="grafico" id="finPrevGraf"></div>
+              <details class="detalhe">
+                <summary>Ver detalhes por mês</summary>
+                <div class="rolagem"><table class="funil" id="finPrevTab"></table></div>
+                <p class="detalhe-nota" id="finPrevNota"></p>
+              </details>
+            </div>
+          </div>
+          <div class="painel">
+            <div class="painel-cab"><h2>Próximas semanas</h2></div>
+            <div class="painel-corpo" id="finSemanas"></div>
           </div>
         </div>
       </div>
 
-      <div class="duas-colunas">
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Previsão de recebimento</h2>
-            <p>Cobranças a vencer por mês · realista = previsto × taxa histórica de pagamento</p>
-          </div>
-          <div class="painel-corpo">
-            <div class="grafico" id="finPrevGraf"></div>
-            <div class="rolagem" style="margin-top:14px"><table class="funil" id="finPrevTab"></table></div>
-          </div>
-        </div>
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Próximas 8 semanas</h2>
-            <p>Valor a vencer por semana (segunda a domingo)</p>
-          </div>
-          <div class="painel-corpo" id="finSemanas"></div>
-        </div>
-      </div>
-
-      <div class="painel">
-        <div class="painel-cab">
-          <h2>Histórico de recebimentos</h2>
-          <p>Valor pago pelos clientes por mês, forma de pagamento e pontualidade</p>
-        </div>
+      <div class="painel fin-visao" data-visao="recebimentos" hidden>
+        <div class="painel-cab"><h2>Recebimentos</h2><p>por forma de pagamento</p></div>
         <div class="painel-corpo">
           <div class="grafico" id="finRecGraf"></div>
-          <div class="rolagem" style="margin-top:14px"><table class="funil" id="finRecTab"></table></div>
+          <details class="detalhe">
+            <summary>Ver detalhes por mês</summary>
+            <div class="rolagem"><table class="funil" id="finRecTab"></table></div>
+          </details>
+          <details class="detalhe">
+            <summary>Recebido por ano</summary>
+            <div id="finAnos"></div>
+          </details>
+          <details class="detalhe">
+            <summary>Últimos pagamentos</summary>
+            <div class="rolagem"><table class="funil" id="finUltimos"></table></div>
+          </details>
         </div>
       </div>
 
-      <div class="duas-colunas">
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Inadimplência</h2>
-            <p>Cobranças vencidas e não pagas, por tempo de atraso</p>
+      <div class="fin-visao" data-visao="inadimplencia" hidden>
+        <div class="duas-colunas">
+          <div class="painel">
+            <div class="painel-cab"><h2>Por tempo de atraso</h2></div>
+            <div class="painel-corpo" id="finInad"></div>
           </div>
-          <div class="painel-corpo" id="finInad"></div>
-        </div>
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Maiores devedores</h2>
-            <p>Clientes com mais valor vencido</p>
+          <div class="painel">
+            <div class="painel-cab"><h2>Maiores devedores</h2></div>
+            <div class="painel-corpo">
+              <div class="rolagem"><table class="funil" id="finDevedores"></table></div>
+              <details class="detalhe" id="finDevMaisBox">
+                <summary>Ver mais devedores</summary>
+                <div class="rolagem"><table class="funil" id="finDevedoresMais"></table></div>
+              </details>
+            </div>
           </div>
-          <div class="painel-corpo rolagem"><table class="funil" id="finDevedores"></table></div>
-        </div>
-      </div>
-
-      <div class="duas-colunas">
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Recebido por ano</h2>
-            <p>Desde o início da conta</p>
-          </div>
-          <div class="painel-corpo" id="finAnos"></div>
-        </div>
-        <div class="painel">
-          <div class="painel-cab">
-            <h2>Últimos recebimentos</h2>
-            <p>Os 15 pagamentos mais recentes</p>
-          </div>
-          <div class="painel-corpo rolagem"><table class="funil" id="finUltimos"></table></div>
         </div>
       </div>
     </section>
@@ -247,6 +244,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="app.js?v=20261006c"></script>
+<script src="app.js?v=20261006d"></script>
 </body>
 </html>
