@@ -1,0 +1,298 @@
+/* Painel CVD — design system C3D (mesmos tokens e componentes de operacao.3cvd.com.br / NIC).
+   Navy + dourado quente + creme, fontes do sistema. Light é o padrão; dark acompanha o SO. */
+:root{
+  color-scheme:light dark;
+  --ground:hsl(40 30% 96%); --surface:hsl(0 0% 100%); --surface-2:hsl(40 18% 91%); --surface-3:hsl(40 20% 90%);
+  --border:hsl(40 14% 84%); --border-strong:hsl(40 14% 79%);
+  --text:hsl(222 30% 11%); --text-2:hsl(222 12% 38%); --text-3:hsl(222 10% 42%);
+  --accent:hsl(38 54% 35%); --accent-ink:hsl(0 0% 100%); --accent-soft:hsl(38 54% 35% / .12);
+  --inv:hsl(199 63% 33%); --inv-soft:hsl(199 63% 33% / .12);
+  --mkt:hsl(300 34% 42%); --mkt-soft:hsl(300 34% 42% / .13);
+  --ok:hsl(153 55% 28%); --warn:hsl(30 92% 34%); --crit:hsl(0 70% 45%);
+  --ok-soft:hsl(153 55% 28% / .12); --warn-soft:hsl(30 92% 34% / .12); --crit-soft:hsl(0 70% 45% / .12);
+  --shadow-1:0 1px 2px hsl(222 40% 6% / .05), 0 1px 3px hsl(222 40% 6% / .07);
+  --shadow-2:0 4px 20px -8px hsl(222 40% 6% / .16);
+  --font-sans:-apple-system,BlinkMacSystemFont,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --font-mono:ui-monospace,'SF Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --ui:var(--font-sans);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:hsl(222 34% 8%); --surface:hsl(222 34% 13%); --surface-2:hsl(222 28% 15%); --surface-3:hsl(221 30% 17%);
+    --border:hsl(221 29% 20%); --border-strong:hsl(221 25% 24%);
+    --text:hsl(40 33% 94%); --text-2:hsl(220 14% 62%); --text-3:hsl(220 13% 56%);
+    --accent:hsl(39 59% 55%); --accent-ink:hsl(222 40% 10%); --accent-soft:hsl(39 59% 55% / .16);
+    --inv:hsl(199 78% 62%); --inv-soft:hsl(199 78% 62% / .14);
+    --mkt:hsl(300 55% 72%); --mkt-soft:hsl(300 55% 72% / .16);
+    --ok:hsl(153 55% 50%); --warn:hsl(40 90% 60%); --crit:hsl(0 84% 68%);
+    --ok-soft:hsl(153 55% 50% / .14); --warn-soft:hsl(40 90% 60% / .14); --crit-soft:hsl(0 84% 68% / .14);
+    --shadow-1:0 1px 2px hsl(222 45% 3% / .5);
+    --shadow-2:0 8px 28px -10px hsl(222 45% 3% / .7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:hsl(222 34% 8%); --surface:hsl(222 34% 13%); --surface-2:hsl(222 28% 15%); --surface-3:hsl(221 30% 17%);
+  --border:hsl(221 29% 20%); --border-strong:hsl(221 25% 24%);
+  --text:hsl(40 33% 94%); --text-2:hsl(220 14% 62%); --text-3:hsl(220 13% 56%);
+  --accent:hsl(39 59% 55%); --accent-ink:hsl(222 40% 10%); --accent-soft:hsl(39 59% 55% / .16);
+  --inv:hsl(199 78% 62%); --inv-soft:hsl(199 78% 62% / .14);
+  --mkt:hsl(300 55% 72%); --mkt-soft:hsl(300 55% 72% / .16);
+  --ok:hsl(153 55% 50%); --warn:hsl(40 90% 60%); --crit:hsl(0 84% 68%);
+  --ok-soft:hsl(153 55% 50% / .14); --warn-soft:hsl(40 90% 60% / .14); --crit-soft:hsl(0 84% 68% / .14);
+  --shadow-1:0 1px 2px hsl(222 45% 3% / .5);
+  --shadow-2:0 8px 28px -10px hsl(222 45% 3% / .7);
+}
+*{box-sizing:border-box}
+/* O atributo `hidden` só esconde porque a folha do navegador diz
+   `[hidden]{display:none}` -- e essa regra perde para qualquer classe que
+   defina display, como .carregando{display:grid} logo abaixo. Sem esta linha
+   o overlay de carregamento nunca some. O NIC tem a mesma regra pelo mesmo
+   motivo. */
+[hidden]{display:none!important}
+body{
+  margin:0; background:var(--ground); color:var(--text);
+  font-family:var(--font-sans);
+  font-size:14px; line-height:1.5;
+  letter-spacing:-.011em;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+h1,h2,h3{font-family:var(--font-sans);margin:0;text-wrap:balance;letter-spacing:-.015em}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.2em;color:var(--text-3)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px hsl(38 54% 35% / .3)}
+:root:not([data-theme="light"]) :focus-visible,:root[data-theme="dark"] :focus-visible{box-shadow:0 0 0 3px hsl(39 59% 55% / .3)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#app{min-height:100dvh;display:flex;flex-direction:column}
+.shell{max-width:none;padding:0 20px 64px}
+
+/* ─── topbar ─── (mesma anatomia do NIC: marca, navegação, quem sou, sair) */
+.topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--ground) 88%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;flex:none}
+.topbar-in{display:flex;align-items:center;gap:16px;height:62px;margin:0 auto;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand-mark{font-family:var(--font-sans);font-weight:700;font-size:19px;letter-spacing:.06em;color:var(--accent)}
+.brand-sub{font-size:11px;color:var(--text-3);white-space:nowrap}
+.sectors{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px}
+.sector{padding:5px 13px;border-radius:999px;font-size:12.5px;font-weight:500;color:var(--text-2);white-space:nowrap;transition:.18s}
+.sector[aria-current="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow-1);border:1px solid var(--border)}
+.sector:not([aria-current="true"]):hover{color:var(--text)}
+.sector[disabled]{opacity:.45;cursor:not-allowed}
+.spacer{flex:1}
+.av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--font-mono);font-size:9.5px;font-weight:600;color:#fff;flex:none}
+.whoami{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:0 9px 0 6px;height:34px}
+.whoami .av{width:22px;height:22px;font-size:8.5px}
+.whoami .eyebrow{font-size:8.5px}
+.whoami-rot{font-family:var(--font-mono);font-size:8.5px;text-transform:uppercase;
+  letter-spacing:.16em;color:var(--text-3)}
+.whoami-nome{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-ghost{border:1px solid var(--border);border-radius:8px;height:34px;padding:0 12px;font-size:12.5px;
+  color:var(--text-2);display:inline-flex;align-items:center;gap:6px;background:var(--surface);transition:.18s}
+.btn-ghost:hover{color:var(--text);border-color:var(--border-strong)}
+.btn-ghost[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+.page-title{display:flex;align-items:baseline;gap:12px;padding:22px 0 15px;flex-wrap:wrap}
+.page-title h1{font-size:27px;font-weight:700}
+.page-title p{margin:0;font-size:12.5px;color:var(--text-3)}
+
+/* ─── filtros ───
+   Uma linha só, acima de tudo que eles filtram. Período e métrica são as duas
+   perguntas que mudam a leitura da página inteira, então ficam juntos. */
+.filtros{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.grupo{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px}
+.grupo button{padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:500;color:var(--text-2);
+  white-space:nowrap;transition:.18s}
+.grupo button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow-1);
+  border:1px solid var(--border)}
+.grupo button:not([aria-pressed="true"]):hover{color:var(--text)}
+.filtro-rot{font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;
+  letter-spacing:.16em;color:var(--text-3)}
+
+/* ─── números de destaque ───
+   Não são gráfico: são quatro números que respondem "como foi o período".
+   Um gráfico aqui seria enfeite -- não há forma, só magnitude. */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:20px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:12px 13px;
+  box-shadow:var(--shadow-1);display:flex;flex-direction:column;gap:3px}
+.tile-n{font-family:var(--font-mono);font-size:29px;font-weight:600;line-height:1.05;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.tile-rot{font-size:12px;color:var(--text-2)}
+.tile-sub{font-family:var(--font-mono);font-size:10px;color:var(--text-3)}
+
+/* ─── painel ─── */
+.painel{background:var(--surface);border:1px solid var(--border);border-radius:9px;
+  box-shadow:var(--shadow-1);margin-bottom:20px;overflow:hidden}
+.painel-cab{display:flex;align-items:baseline;gap:10px;padding:13px 14px 11px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap}
+.painel-cab h2{font-size:15px;font-weight:600}
+.painel-cab p{margin:0;font-size:11.5px;color:var(--text-3)}
+.painel-corpo{padding:14px}
+.rolagem{overflow-x:auto}
+
+.pessoa{display:flex;align-items:center;gap:8px;min-width:0}
+.pessoa .av{width:24px;height:24px;font-size:9px}
+.pessoa-txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.pessoa-nome{font-size:13px;font-weight:600;white-space:nowrap}
+/* A área vem escrita, não só na cor do avatar. A dupla teal/rosa do NIC fica
+   na faixa de risco para daltonismo protan/deutan (ΔE 7.9) -- legível só com
+   um segundo canal. O segundo canal é esta palavra. */
+.pessoa-area{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--text-3)}
+
+
+/* ─── cartão por pessoa ─── */
+.pessoas-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:12px}
+.pcard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--sc,var(--text-3));
+  border-radius:9px;padding:12px 13px;box-shadow:var(--shadow-1);display:flex;flex-direction:column;gap:11px}
+.pcard-cab{display:flex;align-items:center;gap:9px}
+.pcard-tot{margin-left:auto;text-align:right}
+.pcard-tot b{font-family:var(--font-mono);font-size:19px;font-weight:600;
+  font-variant-numeric:tabular-nums;display:block;line-height:1.1}
+.pcard-tot span{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--text-3)}
+
+/* Barras diárias. 2px de respiro entre barras vizinhas, cantos arredondados
+   só no topo (a base fica ancorada na linha de base). */
+.barras{display:flex;align-items:flex-end;gap:2px;height:46px;padding-top:2px}
+.barra{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.barra i{display:block;width:100%;border-radius:3px 3px 0 0;background:var(--sc,var(--accent));min-height:2px;
+  transition:.16s}
+.barra.zero i{background:var(--surface-3);height:2px!important;border-radius:999px}
+.barra:hover i{filter:brightness(1.12)}
+.barras-eixo{display:flex;gap:2px;margin-top:5px}
+.barras-eixo span{flex:1;min-width:0;text-align:center;font-family:var(--font-mono);
+  font-size:8.5px;color:var(--text-3)}
+
+.quebra{display:flex;flex-direction:column;gap:5px;padding-top:10px;border-top:1px solid var(--border)}
+.qlinha{display:flex;align-items:center;gap:8px;font-size:11.5px}
+.qlinha .qrot{color:var(--text-2);min-width:96px}
+.qlinha .qbar{flex:1;height:5px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.qlinha .qbar i{display:block;height:100%;border-radius:999px;background:var(--sc,var(--accent));transition:width .25s}
+.qlinha .qn{font-family:var(--font-mono);font-size:11px;color:var(--text);font-variant-numeric:tabular-nums;
+  min-width:22px;text-align:right}
+
+/* ─── estados ─── */
+.vazio{padding:34px 14px;text-align:center;color:var(--text-3);font-size:13px}
+.nota{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;line-height:1.45;color:var(--text-2);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;margin-bottom:20px}
+.nota b{color:var(--text);font-weight:600}
+.aviso{display:flex;align-items:flex-start;gap:7px;font-size:12px;line-height:1.45;
+  background:var(--crit-soft);color:var(--crit);border-radius:7px;padding:10px 12px;margin:20px 0}
+
+.carregando{position:fixed;inset:0;display:grid;place-items:center;gap:11px;grid-auto-flow:row;
+  background:color-mix(in srgb,var(--ground) 82%,transparent);backdrop-filter:blur(3px);z-index:90;
+  font-size:13px;color:var(--text-2)}
+.carregando-giro{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-strong);
+  border-top-color:var(--accent);animation:giro .7s linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+
+/* ─── funil: tempo por etapa ───
+   Tabela pelo mesmo motivo da matriz: são sete grandezas por etapa e a
+   relação linha/coluna é a informação. A barra mora DENTRO de uma célula, ao
+   lado do número que ela representa -- a barra dá a comparação de relance, o
+   número dá o valor, e nenhum dos dois depende do outro para ser lido. */
+table.funil{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+.funil th,.funil td{padding:7px 10px;text-align:right;white-space:nowrap;vertical-align:middle}
+.funil thead th{font-family:var(--font-mono);font-size:9.5px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--text-3);padding-bottom:9px;
+  border-bottom:1px solid var(--border)}
+.funil tbody tr:hover{background:var(--surface-2)}
+.funil td:first-child,.funil th:first-child{padding-left:0}
+.funil td:last-child,.funil th:last-child{padding-right:0}
+.funil th.etapa-col,.funil td.etapa-col{text-align:left;min-width:190px}
+.funil th.fbar-col,.funil td.fbar-col{width:100%;min-width:130px;text-align:left}
+
+.etapa{display:flex;align-items:center;gap:9px;min-width:0}
+.etapa-cor{width:3px;height:26px;border-radius:999px;flex:none}
+.etapa-txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.etapa-nome{font-size:13px;font-weight:600}
+/* A área vem escrita, e não só na cor da tarja, pelo mesmo motivo do
+   .pessoa-area: teal e rosa se aproximam demais em protan/deutan. */
+.etapa-area{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--text-3)}
+
+.fbar{display:block;width:100%;height:9px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.fbar i{display:block;height:100%;border-radius:999px;transition:width .25s}
+.fnum{font-family:var(--font-mono);font-size:12px;font-variant-numeric:tabular-nums;
+  color:var(--text-2)}
+.fnum.forte{color:var(--text);font-weight:600;font-size:13px}
+.forcado{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--warn);font-weight:500}
+
+
+/* ─── rodapé do cartão de pessoa ─── */
+.pcard-pe{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  padding-top:9px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3)}
+.pcard-pe b{font-family:var(--font-mono);color:var(--text);font-weight:600}
+
+@media (max-width:640px){
+  .topbar-in{height:auto;padding:10px 0;gap:10px}
+  .page-title h1{font-size:22px}
+  .tile-n{font-size:25px}
+  .funil th.etapa-col,.funil td.etapa-col{min-width:150px}
+}
+
+/* ─── acréscimos do Painel CVD (mesmos tokens) ─── */
+.shell{max-width:1240px;margin:0 auto;padding:0 20px 64px;width:100%}
+.view[hidden]{display:none!important}
+.atualizado{font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:.02em}
+
+/* faixa da política de comissões: estado com forma (pílula) e cor semântica */
+.faixa{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;
+  padding:3px 8px;border-radius:999px;white-space:nowrap;font-weight:600}
+.faixa.meta{background:var(--ok-soft);color:var(--ok)}
+.faixa.gatilho{background:var(--warn-soft);color:var(--warn)}
+.faixa.abaixo{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+
+/* progresso até a meta, com o gatilho marcado */
+.prog{display:flex;flex-direction:column;gap:5px}
+.prog-trilho{position:relative;height:9px;border-radius:999px;background:var(--surface-3)}
+.prog-trilho i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--sc,var(--accent));transition:width .25s}
+.prog-trilho .marco{position:absolute;top:-3px;bottom:-3px;width:2px;border-radius:2px;background:var(--text-2)}
+.prog-eixo{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:9.5px;color:var(--text-3)}
+.prog-eixo b{color:var(--text);font-weight:600}
+
+.pcard-faixa{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pcard-faixa span:last-child{font-family:var(--font-mono);font-size:10px;color:var(--text-3)}
+
+.qlinha .qv{margin-left:auto;font-family:var(--font-mono);font-size:11.5px;color:var(--text);font-variant-numeric:tabular-nums}
+
+.funil td.txt,.funil th.txt{text-align:left}
+.funil td.regra{color:var(--text-3);font-size:11.5px;white-space:normal;min-width:240px;text-align:left}
+.funil tfoot td{padding-top:9px;border-top:1px solid var(--border);font-weight:600}
+.cel-av{display:inline-flex;align-items:center;gap:7px}
+.cel-av .av{width:20px;height:20px;font-size:8px}
+
+/* ─── entrada ─── */
+.entrada{min-height:100dvh;display:grid;place-items:center;padding:24px 16px}
+.entrada-cartao{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  box-shadow:var(--shadow-2);padding:26px 24px;display:flex;flex-direction:column;gap:16px}
+.entrada-cartao .brand{flex-direction:column;gap:2px}
+.campo{display:flex;flex-direction:column;gap:5px}
+.campo label{font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--text-3)}
+.campo input{height:38px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);
+  padding:0 11px;font:inherit;font-size:14px}
+.campo input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn-primario{height:38px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:13.5px}
+.btn-primario:hover{filter:brightness(1.06)}
+.btn-primario[disabled]{opacity:.6;cursor:progress}
+.entrada-erro{font-size:12px;color:var(--crit);background:var(--crit-soft);border-radius:7px;padding:9px 11px}
+.entrada-ok{font-size:12px;color:var(--ok);background:var(--ok-soft);border-radius:7px;padding:9px 11px}
+.entrada-pe{font-size:11px;color:var(--text-3);line-height:1.45}
+
+dialog.senha{border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);
+  box-shadow:var(--shadow-2);padding:0;width:min(380px,calc(100vw - 32px))}
+dialog.senha::backdrop{background:hsl(222 40% 6% / .45)}
+dialog.senha form{padding:22px;display:flex;flex-direction:column;gap:14px}
+dialog.senha h2{font-size:16px}
+.acoes{display:flex;gap:8px;justify-content:flex-end}
+
+@media (max-width:640px){
+  .shell{padding:0 16px 48px}
+  .topbar{padding:0 16px}
+  .whoami{display:none}
+}

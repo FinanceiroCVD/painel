@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel CVD · Financeiro</title>
+<!-- Sem webfont: fontes do sistema, como no operacao.3cvd.com.br. -->
+<link rel="stylesheet" href="app.css?v=20261006a">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+
+<!-- Entrada: login do Supabase. Os dados só saem para e-mails da lista de acesso (painel_acessos). -->
+<section class="entrada" id="entrada" hidden>
+  <form class="entrada-cartao" id="formEntrada" novalidate>
+    <div class="brand">
+      <span class="brand-mark">FINANCEIRO</span>
+      <span class="brand-sub">Painel CVD · acesso restrito</span>
+    </div>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="current-password" required>
+    </div>
+    <div class="entrada-erro" id="entradaErro" hidden></div>
+    <button class="btn-primario" id="btnEntrar" type="submit">Entrar</button>
+    <p class="entrada-pe">Sem acesso ou esqueceu a senha? Peça para a Diretoria incluir ou redefinir o seu e-mail.</p>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <div class="topbar">
+    <div class="topbar-in">
+      <div class="brand">
+        <span class="brand-mark">FINANCEIRO</span>
+        <span class="brand-sub">Painel CVD</span>
+      </div>
+      <nav class="sectors" id="nav" aria-label="Áreas">
+        <button class="sector" data-aba="inicio" type="button">Início</button>
+        <button class="sector" data-aba="comercial" type="button">Comercial</button>
+      </nav>
+      <span class="spacer"></span>
+      <div class="whoami">
+        <span class="av" id="avatarEu" style="background:var(--accent)"></span>
+        <span style="display:flex;flex-direction:column;line-height:1.15;min-width:0">
+          <span class="whoami-rot">ATUANDO COMO</span>
+          <span class="whoami-nome" id="nomeEu"></span>
+        </span>
+      </div>
+      <button class="btn-ghost" id="btnSenha" type="button">Trocar senha</button>
+      <button class="btn-ghost" id="btnSair" type="button">🚪 Sair</button>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="view" id="inicio" hidden>
+      <div class="page-title"><h1>Início</h1></div>
+    </section>
+
+    <section class="view" id="comercial" hidden>
+      <div class="page-title">
+        <h1>Comercial</h1>
+        <p id="subtitulo">Fechamentos, metas, comissões e custos dos executivos</p>
+      </div>
+
+      <div class="filtros">
+        <span class="filtro-rot">Mês</span>
+        <div class="grupo" id="meses"></div>
+        <span class="spacer"></span>
+        <span class="atualizado" id="atualizado"></span>
+        <button class="btn-ghost" id="btnAtualizar" type="button">Atualizar</button>
+      </div>
+
+      <div class="aviso" id="aviso" hidden></div>
+      <div class="nota" id="nota" hidden></div>
+
+      <div class="tiles" id="tiles"></div>
+
+      <div class="pessoas-grade" id="executivos" style="margin-bottom:20px"></div>
+
+      <div class="painel">
+        <div class="painel-cab">
+          <h2>Custos do comercial</h2>
+          <p>Ajuda de custo fixa e variável pela regra vigente no mês</p>
+        </div>
+        <div class="painel-corpo rolagem">
+          <table class="funil">
+            <thead><tr>
+              <th class="txt">Pessoa</th><th class="txt">Função</th>
+              <th>Ajuda de custo</th><th>Variável</th><th>Total</th><th class="txt">Regra da variável</th>
+            </tr></thead>
+            <tbody id="custos"></tbody>
+            <tfoot><tr>
+              <td class="txt" colspan="2">Total do comercial</td>
+              <td class="fnum forte" id="totAjuda"></td><td class="fnum forte" id="totVar"></td><td class="fnum forte" id="totGeral"></td>
+              <td class="regra">Variáveis "a apurar" não entram no total.</td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="painel">
+        <div class="painel-cab">
+          <h2>Contratos do mês</h2>
+          <p>Pela data de conclusão no Agendor, no funil do executivo</p>
+          <span class="spacer"></span>
+          <div class="grupo" id="filtroExec"></div>
+        </div>
+        <div class="painel-corpo rolagem">
+          <table class="funil">
+            <thead><tr>
+              <th class="txt">Data</th><th class="txt">Executivo</th><th class="txt">Cliente</th><th class="txt">Produto</th>
+              <th>Parcelas</th><th>Valor do contrato</th>
+            </tr></thead>
+            <tbody id="contratos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="nota">
+        <span><b>Regras.</b> Política de Comissões da Equipe Comercial CVD (05/10/2026). Fechamento conta pelo valor do contrato (honorários iniciais), no funil do executivo onde foi ganho.
+        Abaixo do gatilho não há variável; entre gatilho e meta, valor por contrato; com a meta batida, bônus mais valor por contrato de meta. Beatriz: gatilho e meta de R$ 120.000.
+        Coordenação: 0% até R$ 150 mil na célula, 1,00% até R$ 350 mil, 1,25% até R$ 500 mil e 1,50% acima, sobre a receita inteira.
+        Dados do Agendor a cada 5 minutos; esta página relê a cada 2 minutos.</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog class="senha" id="dlgSenha">
+  <form id="formSenha" method="dialog" novalidate>
+    <h2>Trocar senha</h2>
+    <div class="campo">
+      <label for="novaSenha">Nova senha</label>
+      <input id="novaSenha" type="password" autocomplete="new-password" minlength="8" required>
+    </div>
+    <div class="campo">
+      <label for="novaSenha2">Repita a nova senha</label>
+      <input id="novaSenha2" type="password" autocomplete="new-password" minlength="8" required>
+    </div>
+    <div class="entrada-erro" id="senhaErro" hidden></div>
+    <div class="entrada-ok" id="senhaOk" hidden>Senha alterada.</div>
+    <div class="acoes">
+      <button class="btn-ghost" id="btnSenhaCancelar" type="button">Fechar</button>
+      <button class="btn-primario" id="btnSenhaSalvar" type="submit" style="padding:0 16px">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="carregando" id="carregando" hidden>
+  <span class="carregando-giro" aria-hidden="true"></span>
+  <span id="carregandoTexto">Carregando…</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="app.js?v=20261006a"></script>
+</body>
+</html>
